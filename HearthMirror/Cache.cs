@@ -17,8 +17,7 @@ namespace HearthMirror
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public byte[] Get(long key)
 		{
-			LinkedListNode<Page> node;
-			if(!_map.TryGetValue(key, out node))
+		  if(!_map.TryGetValue(key, out var node))
 				return null;
 			var value = node.Value.Value;
 			_pages.Remove(node);

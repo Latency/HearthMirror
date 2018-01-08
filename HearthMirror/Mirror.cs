@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using HearthMirror.Mono;
@@ -9,6 +10,8 @@ namespace HearthMirror
 	{
 		public string ImageName { get; set; }
 		public bool Active => _process != null;
+
+	    public Dictionary<string, Type> RefTypes = new Dictionary<string, Type>();
 
 		Process _process;
 		public Process Proc => _process ?? (_process = Process.GetProcessesByName(ImageName).FirstOrDefault());
@@ -64,7 +67,19 @@ namespace HearthMirror
 						break;
 					}
 				}
-				return _root = new MonoImage(view, pImage);
+				 _root = new MonoImage(view, pImage);
+
+				// Generate class entities.
+				//var collection = ReflectionExtensions.GetMemberValue(_root, "_classes");
+			    //foreach (var cls in collection) {
+				//	var properties = from field in ReflectionExtensions.GetMemberValue(cls.Value, "Fields") as MonoClassField[]
+				//		  where !field.Name.StartsWith("<") && !field.Name.StartsWith("HutongGames.")
+				//		  orderby field.Offset
+				//		  select field.Name;
+				//DynamicClass.CreateType(this, cls.Key, properties);
+				//}
+
+				return _root;
 			}
 		}
 	}

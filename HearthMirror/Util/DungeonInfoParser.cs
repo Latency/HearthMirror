@@ -36,13 +36,9 @@ namespace HearthMirror.Util
 		private bool GetValue(GameSaveKeySubkeyId key, out int value)
 		{
 			value = 0;
-			List<int> values;
-			if(GetValue(key, out values))
-			{
-				value = values[0];
-				return true;
-			}
-			return false;
+			if (!GetValue(key, out List<int> values)) return false;
+			value = values[0];
+			return true;
 		}
 
 		private bool GetValue<T>(GameSaveKeySubkeyId key, out List<T> values)
@@ -65,21 +61,18 @@ namespace HearthMirror.Util
 					values.Add((T)items[i]);
 				return true;
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				return false;
 			}
 		}
 
-		private string GetTypeKey(Type t)
+		private static string GetTypeKey(Type t)
 		{
-			if(t == typeof(int))
-				return "_IntValue";
-			if(t == typeof(double))
-				return "_FloatValue";
-			if(t == typeof(string))
-				return "_StringValue";
-			return null;
+			return t == typeof(int) ? "_IntValue"
+				: (t == typeof(double) ? "_FloatValue"
+				: (t == typeof(string) ? "_StringValue"
+				: null));
 		}
 
 	}

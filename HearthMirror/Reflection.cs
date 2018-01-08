@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HearthMirror.Enums;
 using HearthMirror.Objects;
@@ -27,6 +28,7 @@ namespace HearthMirror
 			}
 			catch(Exception e)
 			{
+			    Debug.WriteLine(e.Message);
 				Mirror.Clean();
 				try
 				{
@@ -34,6 +36,7 @@ namespace HearthMirror
 				}
 				catch(Exception e2)
 				{
+		  			Debug.WriteLine(e2.Message);
 					return default(T);
 				}
 			}
@@ -41,25 +44,25 @@ namespace HearthMirror
 
 		public static List<Card> GetCollection() => TryGetInternal(() => GetCollectionInternal().ToList());
 
-		private static IEnumerable<Card> GetCollectionInternal()
-		{
-			var values = Mirror.Root?["NetCache"]["s_instance"]["m_netCache"]["valueSlots"];
-			foreach(var val in values)
-			{
-				if(val == null || val.Class.Name != "NetCacheCollection") continue;
-				var stacks = val["<Stacks>k__BackingField"];
-				var items = stacks["_items"];
-				int size = stacks["_size"];
-				for(var i = 0; i < size; i++)
-				{
-					var stack = items[i];
-					int count = stack["<Count>k__BackingField"];
-					var def = stack["<Def>k__BackingField"];
-					string name = def["<Name>k__BackingField"];
-					int premium = def["<Premium>k__BackingField"];
-					yield return new Card(name, count, premium > 0);
-				}
-			}
+		private static IEnumerable<Card> GetCollectionInternal() {
+		  var values = Mirror.Root?["NetCache"]["s_instance"]["m_netCache"]["valueSlots"];
+		  if (values != null) {
+		    foreach (var val in values) {
+		      if (val == null || val.Class.Name != "NetCacheCollection")
+		        continue;
+		      var stacks = val["<Stacks>k__BackingField"];
+		      var items = stacks["_items"];
+		      int size = stacks["_size"];
+		      for (var i = 0; i < size; i++) {
+		        var stack = items[i];
+		        int count = stack["<Count>k__BackingField"];
+		        var def = stack["<Def>k__BackingField"];
+		        string name = def["<Name>k__BackingField"];
+		        int premium = def["<Premium>k__BackingField"];
+		        yield return new Card(name, count, premium > 0);
+		      }
+		    }
+		  }
 		}
 
 		public static List<Deck> GetDecks() => TryGetInternal(() => InternalGetDecks().ToList());
@@ -156,6 +159,7 @@ namespace HearthMirror
 			var matchInfo = new MatchInfo();
 			var gameState = Mirror.Root?["GameState"]["s_instance"];
 			var netCacheValues = Mirror.Root?["NetCache"]["s_instance"]?["m_netCache"]?["valueSlots"];
+
 			if(gameState != null)
 			{
 				var playerIds = gameState["m_playerMap"]["keySlots"];
@@ -246,18 +250,18 @@ namespace HearthMirror
 		private static ArenaInfo GetArenaDeckInternal()
 		{
 			var draftManager = Mirror.Root?["DraftManager"]["s_instance"];
-			var deck = GetDeck(draftManager["m_draftDeck"]);
+			var deck = GetDeck(draftManager?["m_draftDeck"]);
 			if(deck == null)
 				return null;
 
-			var season = draftManager["m_currentSeason"]?["_Season"]?["<GameContentSeason>k__BackingField"]?["<SeasonId>k__BackingField"];
+			var season = draftManager?["m_currentSeason"]?["_Season"]?["<GameContentSeason>k__BackingField"]?["<SeasonId>k__BackingField"];
 
 			return new ArenaInfo {
-				Wins = draftManager["m_wins"],
-				Losses = draftManager["m_losses"],
-				CurrentSlot = draftManager["m_currentSlot"],
+				Wins = draftManager?["m_wins"],
+				Losses = draftManager?["m_losses"],
+				CurrentSlot = draftManager?["m_currentSlot"],
 				Deck = deck,
-				Rewards = RewardDataParser.Parse(draftManager["m_chest"]?["<Rewards>k__BackingField"]?["_items"]),
+				Rewards = RewardDataParser.Parse(draftManager?["m_chest"]?["<Rewards>k__BackingField"]?["_items"]),
 				Season = season
 			};
 		}
@@ -267,11 +271,11 @@ namespace HearthMirror
 		private static IEnumerable<Card> GetArenaDraftChoicesInternal()
 		{
 			var choicesList =  Mirror.Root?["DraftDisplay"]["s_instance"]["m_choices"];
-			var choices = choicesList["_items"];
-			int size = choicesList["_size"];
+			var choices = choicesList?["_items"];
+			int size = choicesList?["_size"];
 			for(var i = 0; i < size; i++)
 			{
-				if(choices[i] != null)
+				if(choices?[i] != null)
 					yield return new Card(choices[i]["m_actor"]["m_entityDef"]["m_cardId"], 1, false);
 			}
 		}
@@ -319,11 +323,11 @@ namespace HearthMirror
 		private static Deck GetEditedDeckInternal()
 		{
 			var taggedDecks = Mirror.Root?["CollectionManager"]["s_instance"]["m_taggedDecks"];
-			var tags = taggedDecks["keySlots"];
-			var decks = taggedDecks["valueSlots"];
-			for (var i = 0; i < tags.Length; i++)
+			var tags = taggedDecks?["keySlots"];
+			var decks = taggedDecks?["valueSlots"];
+			for (var i = 0; i < tags?.Length; i++)
 			{
-				if(tags[i] == null || decks[i] == null)
+				if(tags?[i] == null || decks?[i] == null)
 					continue;
 				if(tags[i]["value__"] == 0)
 					return GetDeck(decks[i]);
@@ -391,10 +395,10 @@ namespace HearthMirror
 		private static SetFilterItem GetCurrentSetFilterInternal()
 		{
 			var item = Mirror.Root?["CollectionManagerDisplay"]["s_instance"]["m_setFilterTray"]["m_selected"];
-			return new SetFilterItem()
+			return new SetFilterItem
 			{
-				IsAllStandard =  (bool)item["m_isAllStandard"],
-				IsWild = (bool)item["m_isWild"]
+				IsAllStandard =  item != null && (bool)item["m_isAllStandard"],
+				IsWild = item != null && (bool)item["m_isWild"]
 			};
 		}
 
@@ -405,8 +409,8 @@ namespace HearthMirror
 			var bTag = Mirror.Root?["BnetPresenceMgr"]["s_instance"]["m_myPlayer"]["m_account"]["m_battleTag"];
 			return new BattleTag
 			{
-				Name = bTag["m_name"],
-				Number = bTag["m_number"]
+				Name = bTag?["m_name"],
+				Number = bTag?["m_number"]
 			};
 		}
 
@@ -555,12 +559,12 @@ namespace HearthMirror
 #if(DEBUG)
 		public static void DebugHelper()
 		{
-			var data = new[]
+		  var data = new[]
 			{
 				"NetCache", "GameState", "Log", "TavernBrawlManager", "TavernBrawlDisplay", "BnetPresenceMgr", "DraftManager",
 				"PackOpening", "CollectionManagerDisplay", "GameMgr", "Network", "DraftManager", "DraftDisplay"
-			}.Select(x => Mirror.Root?[x]?["s_instance"]).ToList();
-			System.Diagnostics.Debugger.Break();
+			}.Select(x => Mirror.Root?[x]).ToList();
+			Debugger.Break();
 		}
 #endif
 	}

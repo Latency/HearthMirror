@@ -27,7 +27,7 @@ namespace HearthMirror
 			Valid = ReadBytes(_module, 0, _module.Length, _moduleBase) && LoadPeHeader();
 		}
 
-		public bool Valid { get; private set; }
+		public bool Valid { get; }
 
 		internal void ClearCache() => _cache.Clear();
 
@@ -58,11 +58,9 @@ namespace HearthMirror
 		private byte[] ReadPage(long addr, int offset)
 		{
 			var buffer = new byte[PageSize];
-			IntPtr bytesRead;
-			var buffHandle = GCHandle.Alloc(buffer);
+		    var buffHandle = GCHandle.Alloc(buffer);
 			var buffPtr = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, offset);
-			var result = ReadProcessMemory(_procHandle, (IntPtr)unchecked((int)addr), buffPtr, PageSize, out bytesRead) &&
-						(int)bytesRead == PageSize;
+			var result = NativeMethods.ReadProcessMemory(_procHandle, (IntPtr)unchecked((int)addr), buffPtr, (IntPtr) PageSize, out var bytesRead) && (int)bytesRead == PageSize;
 			buffHandle.Free();
 			return result ? buffer : new byte[PageSize];
 		}
@@ -77,11 +75,9 @@ namespace HearthMirror
 			// - long[256] to store page occupancy in the
 			// - byte[256 * 4096] page cache.
 			// (Once this is done, the ReadCString and LoadPeHeader methods can be simplified)
-			IntPtr bytesRead;
-			var buffHandle = GCHandle.Alloc(buf);
+		  var buffHandle = GCHandle.Alloc(buf);
 			var buffPtr = Marshal.UnsafeAddrOfPinnedArrayElement(buf, offset);
-			var result = ReadProcessMemory(_procHandle, (IntPtr)unchecked((int)addr), buffPtr, size, out bytesRead) &&
-						(int)bytesRead == size;
+			var result = NativeMethods.ReadProcessMemory(_procHandle, (IntPtr)unchecked((int)addr), buffPtr, (IntPtr) size, out var bytesRead) && (int)bytesRead == size;
 			buffHandle.Free();
 			return result;
 		}
@@ -128,13 +124,14 @@ namespace HearthMirror
 		private static string GetCString(byte[] buf, int ofs)
 		{
 			var i = ofs;
-			while(0 != buf[i++]) ;
-			return Encoding.ASCII.GetString(buf, ofs, i - ofs - 1);
+			while(0 != buf[i++]) { }
+		    return Encoding.ASCII.GetString(buf, ofs, i - ofs - 1);
 		}
 
 		private bool LoadPeHeader()
 		{
 			// IMAGE_DOS_HEADER.e_lfanew
+		    // ReSharper disable once InconsistentNaming
 			var e_lfanew = BitConverter.ToInt32(_module, (int)Offsets.ImageDosHeader_e_lfanew);
 
 			// IMAGE_FILE_HEADER.Signature
@@ -154,8 +151,5 @@ namespace HearthMirror
 
 			return _exportOffset > 0 && _exportOffset < _module.Length;
 		}
-
-		[DllImport("kernel32", SetLastError = true)]
-		private static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, IntPtr lpBuffer, int nSize, out IntPtr lpNumberOfBytesRead);
 	}
 }
