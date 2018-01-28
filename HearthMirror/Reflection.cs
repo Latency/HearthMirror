@@ -42,6 +42,8 @@ namespace HearthMirror
 			}
 		}
 
+		public static void Reinitialize() => Mirror.Clean();
+
 		public static List<Card> GetCollection() => TryGetInternal(() => GetCollectionInternal().ToList());
 
 		private static IEnumerable<Card> GetCollectionInternal() {
@@ -333,6 +335,12 @@ namespace HearthMirror
 					return GetDeck(decks[i]);
 			}
 			return null;
+		}
+
+		public static bool IsFriendlyChallengeDialogVisible()
+		{
+			var dialog = TryGetInternal(() => Mirror.Root?["DialogManager"]["s_instance"]["m_currentDialog"]);
+			return dialog?.Class.Name == "FriendlyChallengeDialog" && dialog?["m_shown"];
 		}
 
 		public static bool IsFriendsListVisible() => TryGetInternal(() => Mirror.Root?["ChatMgr"]?["s_instance"]?["m_friendListFrame"]) != null;
