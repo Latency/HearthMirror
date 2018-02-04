@@ -1,0 +1,37 @@
+﻿<Project ToolsVersion="15.0" Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>net471;net45;netstandard2.0;netcoreapp2.0</TargetFrameworks>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>snKey.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>HearthStone.Mirror</RootNamespace>
+	  <AssemblyName>HearthStone.Mirror</AssemblyName>
+	  <Version>1.0.1</Version>
+	  <Description>HearthStone Deck Tracker Mirror</Description>
+	  <PackageTags>HearthStone Deck Tracker Mirror</PackageTags>
+	  <PackageReleaseNotes>Upgraded build configurations.</PackageReleaseNotes>
+	  <RepositoryType>GIT</RepositoryType>
+	  <RepositoryUrl>https://github.com/Latency/HearthStone.Mirror</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/Latency/HearthStone.Mirror</PackageProjectUrl>
+	  <Copyright>Copyright © HearthSim</Copyright>
+	  <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+	  <Company>HearthSim</Company>
+	  <Authors>HearthSim</Authors>
+	  <PackageIconUrl>https://raw.githubusercontent.com/HearthSim/Hearthstone-Deck-Tracker/master/Hearthstone%20Deck%20Tracker/Images/HearthstoneDeckTracker.ico</PackageIconUrl>
+	  <AssemblyVersion>1.0.1.0</AssemblyVersion>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="TypeBuilder\**" />
+    <EmbeddedResource Remove="TypeBuilder\**" />
+    <None Remove="TypeBuilder\**" />
+    <Compile Remove="Stubs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
+  </ItemGroup>
+
+</Project>

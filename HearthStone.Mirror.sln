@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HearthStone.Mirror", "HearthStone.Mirror\HearthStone.Mirror.csproj", "{1694A2F8-645A-4263-A6AB-FC26323FD675}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4EC4574D-60DC-44D1-B2FF-A36B51B2063A}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AnyCPU = Debug|AnyCPU
+		Release|AnyCPU = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1694A2F8-645A-4263-A6AB-FC26323FD675}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{1694A2F8-645A-4263-A6AB-FC26323FD675}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{1694A2F8-645A-4263-A6AB-FC26323FD675}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{1694A2F8-645A-4263-A6AB-FC26323FD675}.Release|AnyCPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {27279934-37EB-4B96-B896-B8DBEF708851}
+	EndGlobalSection
+EndGlobal
